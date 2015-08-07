@@ -1,3 +1,12 @@
+paths = {
+--[[
+Path to your 4.20 compatible client folder
+Must point to the lol_game_client folder (and please use TWO \\)
+Example: C:\\LOL420\\RADS\\projects\\lol_game_client\\
+--]]
+	['client'] = "C:\\Users\\John\\Downloads\\LOLPBE\\LOLPBE\\RADS\\projects\\lol_game_client\\"
+}
+
 players = {
 	["player1"] = {
 		["rank"] = "DIAMOND",
