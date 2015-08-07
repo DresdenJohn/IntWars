@@ -26,9 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "VersionCommon.h"
 
-#ifdef __DRESDENJOHN
+#ifdef __PATH_BY_LUA
 	#include "LuaScript.h"
-#endif
+#endif // __PATH_BY_LUA
 
 #define SERVER_HOST ENET_HOST_ANY 
 #define SERVER_PORT 5119
@@ -43,21 +43,17 @@ int main(int argc, char ** argv)
 	Logger::instance().setLogFile("../../log.html", false, true);
 	CORE_INFO("Loading RAF files in filearchives/.");
    
-   #ifdef __DRESDENJOHN
-		#ifdef __PATH_BY_LUA
-			LuaScript script(false);
-			script.loadScript("../../lua/config.lua");
-		
-			sol::table pathList = script.getTable("paths");
-			std::string basePath = pathList.get<std::string>("client");
-			std::replace(basePath.begin(), basePath.end(), '\\', '/');
-			CORE_INFO(basePath);
-		#else
-			std::string basePath = RAFManager::getInstance()->findGameBasePath();
-		#endif // __PATH_BY_LUA
+	#ifdef __PATH_BY_LUA
+		LuaScript script(false);
+		script.loadScript("../../lua/config.lua");
+	
+		sol::table pathList = script.getTable("paths");
+		std::string basePath = pathList.get<std::string>("client");
+		std::replace(basePath.begin(), basePath.end(), '\\', '/');
+		CORE_INFO(basePath);
 	#else
 		std::string basePath = RAFManager::getInstance()->findGameBasePath();
-	#endif // __DRESDENJOHN
+	#endif // __PATH_BY_LUA
 
    if(!RAFManager::getInstance()->init(basePath + "filearchives")) {
       CORE_ERROR("Couldn't load RAF files. Make sure you have a 'filearchives' directory in the server's root directory. This directory is to be taken from RADS/projects/lol_game_client/");
