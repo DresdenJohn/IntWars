@@ -10,9 +10,15 @@
 #include "Logger.h"
 #include "Minion.h"
 #include "Champion.h"
+#include <time.h>
+#include "VersionCommon.h"
 
 Map * Pathfinder::chart = 0;
+#ifdef __VS_COMPILE
+auto g_Clock = clock();
+#else
 auto g_Clock = std::clock(); 
+#endif // __VS_COMPILES
 
 #define debugOutput() false //((std::clock() - g_Clock) > 4000)
 
@@ -27,7 +33,11 @@ Path Pathfinder::getPath(Vector2 from, Vector2 to, float boxSize)
    Path path;
 	PathJob job; 
 	
+#ifdef __VS_COMPILE
+	if ((clock() - g_Clock) > 4000 && (successes + oot + empties) > 0)
+#else
 	if ((std::clock() - g_Clock) > 4000 && (successes + oot + empties) > 0)
+#endif
 	{
 		CORE_INFO("Pathfinding successrate: %f", (((float)successes / (float)(successes + oot + empties))*(100.0f)));
 	}
@@ -441,11 +451,19 @@ void PathJob::cleanLists()
 	totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 	durations++;
 
+#ifdef __VS_COMPILE
+	if ((clock() - g_Clock) > 4000)
+	{
+		CORE_INFO("%f milliseconds, %d paths.", (float)totalDuration / (float)durations, durations);
+		g_Clock = clock();
+	}
+#else
 	if ((std::clock() - g_Clock) > 4000)
 	{
 		CORE_INFO("%f milliseconds, %d paths.", (float)totalDuration/(float)durations, durations);
 		g_Clock = std::clock();
 	}
+#endif // __VS_COMPILE
 }
 
 void Pathfinder::setMap(Map * map)

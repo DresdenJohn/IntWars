@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "Packets.h"
 #include "Logger.h"
 #include <stdio.h>
+#include "VersionCommon.h"
+
 //#undef min // No, do NOT do this.
 //#define min(a, b)       ((a) < (b) ? (a) : (b))
 
@@ -181,11 +183,21 @@ bool Game::broadcastPacketVision(Object* o, const Packet& packet, uint8 channelN
 
 bool Game::broadcastPacketVision(Object* o, const uint8 *data, uint32 length, uint8 channelNo, uint32 flag) {
    
+#ifdef __VS_COMPILE
+	if (o->isVisibleByTeam(0)) {
+		broadcastPacketTeam(TEAM_BLUE, data, length, channelNo, flag);
+	}
+	else {
+		broadcastPacketTeam(TEAM_PURPLE, data, length, channelNo, flag);
+	}
+	return true;
+#else
    for(int i = 0; i < 2; ++i) {
       if(o->isVisibleByTeam(i)) {
          broadcastPacketTeam((i == 0) ? TEAM_BLUE : TEAM_PURPLE, data, length, channelNo, flag);
       }
    }
+#endif // __VS_COMPILE
 }
 
 bool Game::handlePacket(ENetPeer *peer, ENetPacket *packet, uint8 channelID)
